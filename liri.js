@@ -11,8 +11,8 @@ const spotifyParams = keys.spotifyKeys;
 const twitterKeys = keys.twitterKeys;
 
 // Inputs
-let firstArg  = process.argv[2].toLowerCase();
-let secondArg = process.argv[3].toLowerCase();
+let firstArg  = process.argv[2];
+let secondArg = process.argv[3];
 
 // Instances
 let client = new Twitter(twitterKeys);
@@ -37,7 +37,12 @@ if (firstArg === "do-what-it-says") {
     }
 
     for (let i=0; i < commandArr.length; i++) {
-        runApp(commandArr[i].command, commandArr[i].value);
+      // console.log(
+      //   "\n----------------------\n" +
+      //   `|       TASK ${i+1}       |\n` +
+      //   "----------------------\n"
+      // );
+      runApp(commandArr[i].command, commandArr[i].value);
     }
   });
 
@@ -48,14 +53,16 @@ if (firstArg === "do-what-it-says") {
 function runApp(input, value) {
 
   if (input === "my-tweets") {
-    client.get('statues/user-timeline', twitterParams, function (error, tweets, response) {
+    client.get('statuses/user_timeline', twitterParams, function (error, tweets, response) {
+
       if (!error) {
-        throw error;
+        console.log("\n------------ TWEETS ------------\n");
+        for (let i=0; i < 19; i++) {
+          console.log("CREATED: " + tweets[i].created_at);
+          console.log('TWEET: ' + tweets[i].text + "\n");
+        }
+        console.log("--------------------------------");
       }
-      console.log("\n------TWEETS-----\n");
-      console.log(tweets);
-      // console.log("\n------RAW TWITTER RESPONSE-----\n");
-      // console.log(response);
 
     });
   }
@@ -107,11 +114,11 @@ function runApp(input, value) {
     });
 
   } else {
-    console.log("User input specified is not recognized");
-    console.log("Please use one of the following commands:\n" +
-    "my-tweets\n" +
-    "movie-this <insert movie name>\n" +
-    "spotify-this-song <insert song name>\n" +
+    console.log("\nUser input specified is NOT recognized: " + input + "\n" +
+    "\nPlease use one of the following commands: " +
+    "\nmy-tweets\n" +
+    "movie-this <insert movie name as string>\n" +
+    "spotify-this-song <insert song name as string>\n" +
     "do-what-it-says"
   );
   }
