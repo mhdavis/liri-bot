@@ -5,12 +5,10 @@ const Spotify = require('node-spotify-api');
 const fs = require('fs');
 
 // Keys and Params
-const twitterKeys =  require("./keys.js");
-const twitterParams = {screen_name: 'TeamSoloMid'};
-const spotifyParams = {
-  id: false,
-  secret: false
-};
+const keys =  require("./keys.js");
+const twitterParams = {screen_name: 'donjohnsonvice'};
+const spotifyParams = keys.spotifyKeys;
+const twitterKeys = keys.twitterKeys;
 
 // Inputs
 let firstArg  = process.argv[2].toLowerCase();
@@ -20,20 +18,26 @@ let secondArg = process.argv[3].toLowerCase();
 let client = new Twitter(twitterKeys);
 // let spotify = new Spotify(spotifyParams);
 
-if (firstArg === "do-what-it-says"); {
+if (firstArg === "do-what-it-says") {
   fs.readFile("random.txt", "utf8", function (error, data) {
     if (error) {
       return console.log(error);
     }
 
     let dataArr = data.split("\n");
-    let commandObj = {};
+
+    let commandArr = [];
     for (let i=0; i < dataArr.length; i++) {
-      commandObj[i][0] = commandObj[i][1];
+      let commandItem = dataArr[i].split(',');
+      let obj = {
+        command: commandItem[0],
+        value: commandItem[1]
+      }
+      commandArr.push(obj);
     }
 
-    for (let command in commandObj) {
-      runApp(command, commandObj[command]);
+    for (let i=0; i < commandArr.length; i++) {
+        runApp(commandArr[i].command, commandArr[i].value);
     }
   });
 
@@ -67,22 +71,28 @@ function runApp(input, value) {
   }
   else if (input === "movie-this") {
 
-    console.log("Movie: " value);
-
     let queryURL = "http://www.omdbapi.com/?t=" + value + "&y=&plot=short&apikey=40e9cece";
 
-    request(queryURL, function (error, response, body) {
+    Request.get(queryURL, function (error, response, body) {
 
       if (!error && response.statusCode === 200) {
-        console.log('body: ', body);
-        // Movie title
-        // Release Year
-        // IMDB Rating
-        // Rotten Tomatoes Rating
-        // Country the movie was produced in
-        // Movie language
-        // Plot
-        // Actors
+
+        let result = JSON.parse(body);
+
+        console.log(
+          "\n------------ MOVIE --------------\n" +
+          "TITLE: " + result.Title + "\n" +
+          "RELEASED: " + result.Released + "\n" +
+          "IMDB RATING: " + result.imdbRating + "\n" +
+          "COUNTRY PRODUCED: " + result.Country + "\n" +
+          "LANGUAGE: " + result.Language + "\n" +
+          "PLOT:\n" +
+           result.Plot + "\n" +
+          "ACTORS:\n" +
+           result.Actors + "\n" +
+           "---------------------------------"
+         );
+         
       } else {
         console.log('Error: ', error);
       }
