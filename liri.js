@@ -16,7 +16,7 @@ let secondArg = process.argv[3].toLowerCase();
 
 // Instances
 let client = new Twitter(twitterKeys);
-// let spotify = new Spotify(spotifyParams);
+let spotify = new Spotify(spotifyParams);
 
 if (firstArg === "do-what-it-says") {
   fs.readFile("random.txt", "utf8", function (error, data) {
@@ -64,8 +64,16 @@ function runApp(input, value) {
       if (error) {
         return console.log('Error: ' + error);
       }
+      let songInfo = data.tracks.items[0];
 
-      console.log(data);
+      console.log(
+        "\n------------ SONG --------------\n" +
+        "ARTISTS: " + songInfo.artists[0].name + "\n" +
+        "SONG: " + songInfo.name + "\n" +
+        "ALBUM: " + songInfo.album.name + "\n" +
+        "URL: " + songInfo.external_urls.spotify + "\n" +
+        "--------------------------------"
+      );
     });
 
   }
@@ -92,7 +100,7 @@ function runApp(input, value) {
            result.Actors + "\n" +
            "---------------------------------"
          );
-         
+
       } else {
         console.log('Error: ', error);
       }
